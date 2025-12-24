@@ -336,7 +336,7 @@ import ./sub/imported.nix { x = 1; y = 2; }; # -> { a = 1; b = 2; }
 import ./sub { x = 1; y = 2; }; # -> { a = 1; b = 2; }
 ```
 
-ちょうどNode.jsの`init.js`やRustの`mod.rs`と同じ使い方ができます。
+ちょうどNode.jsの`index.js`やRustの`mod.rs`と同じ使い方ができます。
 
 ## derivation関数
 
