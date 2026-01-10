@@ -77,7 +77,7 @@ cat: /nix/store/z4j03hs3qk7a3cbiwglgys2cz61pbi6s-hello-txt: No such file or dire
 
 どうやらファイルが存在しないようです。
 
-derivation関数はstore derivationを生成しますが、ビルドまでは行いません。実際にビルドを行うにはderivation関数が生成したstore derivationを**realise**する必要があります。
+derivation関数はstore derivationの生成のみを行います。実際にビルドを行うにはstore derivationを**realise**する必要があります。
 
 ### Realisation
 
@@ -93,10 +93,10 @@ Hello
 
 ビルドが成功し、`outPath`に`Hello`という文字列が書き込まれたファイルが生成されました。
 
-基本的にNix言語はパッケージをrealiseできません（後述のIFDを除く）。Nix言語はstore derivationを生成するDSLとして機能し、Nixのコマンド（`nix-store --realise`/`nix build`など）がrealiseを行います。
+基本的にNix言語を評価しただけだとパッケージはrealiseされません（後述のIFDを除く）。Nix言語はstore derivationを生成するDSLとして機能し、Nixのコマンド（`nix-store --realise`/`nix build`など）がrealiseを行います。
 
 :::details Realisationの結果が異なる場合
-前述の`drv.nix`は、説明を簡潔にするために本来なら厳密に指定すべき部分を誤魔化しています。そのため、環境によってはビルド結果が異なる場合がありますが、そのまま無視して進めてください。
+前述の`drv.nix`は、説明を簡潔にするために本来なら厳密に指定すべき部分を誤魔化しています。そのため、読者の環境によってはビルド結果が異なる場合がありますが、そのまま無視して進めてください。
 
 例えば、macOSでは以下のissueのような出力結果になる可能性があります。
 https://github.com/asa1984/nix-zenn-articles/issues/14#issuecomment-2322872556
@@ -110,7 +110,7 @@ derivation関数のポイントは、関数の返り値としてstore derivation
 
 Store derivationはNix式の低レベル表現と見做すことができます。
 
-副作用と聞くとNix言語の純粋関数型言語としての性質と相反するように思えますが、Nixストアとビルドシステムとの連携により全体としては純粋なシステムとして機能しています。暗黙的な挙動ではありますが、Nix言語の評価やビルドの決定性を損うものではありません。
+副作用と聞くとNix言語の純粋関数型言語としての性質と相反するように思えますが、Nixストアとビルドシステムとの連携により全体としては純粋なシステムとして機能しています。暗黙的な挙動ではありますが、Nix言語の評価・パッケージビルドの決定性を損うものではありません。
 
 ## Store derivation
 
@@ -143,7 +143,7 @@ $ nix derivation show --file ./drv.nix
 
 `env`キーに注目してください。ここには、このstore derivationをrealiseするとき（つまり実際にビルドを実行するとき）にビルド環境（サンドボックス）で有効化される環境変数が指定されています。
 
-このstore derivationは最低限のパラメーターしか設定していないので、以下の4つの環境変数のみが有効化されます。
+この例のstore derivationは最低限のパラメーターしか設定していないので、以下の4つの環境変数のみが有効化されます。
 
 | 環境変数名 | 内容                                   |
 | ---------- | -------------------------------------- |
@@ -152,13 +152,14 @@ $ nix derivation show --file ./drv.nix
 | out        | ビルド成果物を配置するストアパス       |
 | system     | ビルドターゲットのプラットフォーム     |
 
-特に重要なのは`$out`です。ビルド成果物をNixストアに配置するためには、サンドボックスから`$out`にファイル・ディレクトリを移動またはコピーする必要があります。`$out`に移動されなかったファイルはrealisation終了時にサンドボックスごと破棄されます。
+特に重要なのは`$out`です。ビルド成果物をNixストアに配置するためには、サンドボックスから`$out`にビルド成果物にあたるファイル・ディレクトリを移動またはコピーする必要があります。`$out`に移動されなかったファイルはrealisation終了時にサンドボックスごと破棄されます。
 
 前述のstore derivationをrealiseすると、Nixはサンドボックス内で`/bin/sh -c "echo -n Hello > $out"`を実行し、`$out`に`Hello`という文字列を書き込みます。
 
 ## 実際のパッケージのstore derivation
 
 先程例として示したstore derivationは非常にシンプルなもので、実際のパッケージの場合はもっと複雑です。以下にNixpkgsに収録されているGNU Helloを評価した際に生成されるstore derivationを示します。長いので折り畳んでいます。
+
 :::details GNU Helloのstore derivation
 
 ```json
@@ -238,7 +239,7 @@ $ nix derivation show --file ./drv.nix
 まず、`builder`にbashのストアパスが指定されており、`args`にもシェルスクリプトファイルのストアパスが含まれています。そして先程の例では空だった`inputDrvs`にいくつかのstore derivationが指定されています。これらはパッケージをビルドする際に必要な依存です。
 そして`env`にはたくさんの環境変数が指定されています。特に注目すべきは`src`で、ここにはGNU Helloのソースコード（tarball）のストアパスが指定されています。
 
-derivation関数だけを使ってこのような複雑なstore derivationを生成するのはとても大変なので、実際のパッケージビルドではNixpkgsから提供されている**stdenv**を使用します。stdenvはderivation関数をラップしており、より直感的にビルド定義を記述することができます。詳細は[_3.1. stdenv_](ch03-01-stdenv)で解説します。
+derivation関数だけを使ってこのような複雑なstore derivationを生成するのはとても大変なので、実際のパッケージビルドではNixpkgsから提供されている**stdenv**というユーティリティーを使用します。stdenvはderivation関数をラップしており、より直感的にビルド定義を記述することができます。詳細は[_3.1. stdenv_](ch03-01-stdenv)で解説します。
 
 ## Import From Derivation
 
@@ -268,7 +269,7 @@ builtins.readFile drv.outPath
 
 `drv`変数に`drv.nix`を読み込みます。
 
-`drv.outPath`が示すファイルは先程削除しました。derivation関数でstore derivationを生成しても、realiseしない限り`drv.outPath`が示すストアパスにファイルは存在しないので、`readFile`は失敗するはずです。評価してみましょう。
+`drv.outPath`が示すファイルは先程削除したので、derivation関数でstore derivationを生成しても、realiseしない限り`drv.outPath`が示すストアパスにファイルは存在せず、`readFile`は失敗するはずです。評価してみましょう。
 
 ```bash :drv.nixの評価
 $ nix eval --file ./IFD.nix
@@ -291,8 +292,8 @@ IFDは、以下の組み込み関数でストアパスにアクセスしたと�
 - hashFile
 - scopedImport
 
-IFDはNix式の評価をブロックします。IFDが発生すると評価が一時的に中断され、対象のrealise（つまりビルドの実行）が終了するまで待機します。Realisationが完了するとNix式の評価が再開されます。
-例えば、realise対象が長いコンパイル時間を要するパッケージだった場合、その時間分だけNix式の評価時間も長くなります。また、IFD中にrealisationが失敗するとNix式の評価も失敗します。
+IFDが発生するとNixはNix式の評価を一時的に中断し、対象のrealise（ビルドの実行）が完了するまで待機します。
+例えば、realise対象が長いビルド時間を要するパッケージだった場合、その時間分だけNix式の評価時間も長くなります。また、IFD中にrealisationが失敗するとNix式の評価も失敗します。
 
 やや難しい概念ですが、公式リファレンスの図を見るとイメージしやすいかもしれません。
 
@@ -379,7 +380,7 @@ IFDの存在は、Nix言語の評価がrealisation（ビルドの実行）に依
 
 一見、言語の評価がパッケージビルドに依存するのは問題があるように思えますが、それはビルドが決定論的でない場合の話です。Nixのビルドシステムは決定論的であり、必ず同じ結果を返します。Nix言語の評価の決定性とビルドの決定性は表裏一体となっています。
 
-また、Nix言語はstore derivationに直接触れることができず、instantiationやIFDはNix言語から隠蔽されています。Store derivationやIFDは、Nix言語視点では低レベル世界の事情であり、いわば高級言語から見たメモリ管理のようなものです。知っておくと便利ではあるものの、言語の純粋性に直接影響を与えるものではないので、常に意識する必要はありません。
+また、Nix言語はstore derivationに直接触れることができず、instantiationやIFDといったNixストアへの書き込み操作はNix言語のインターフェースから隠蔽されています。Store derivationやIFDは、Nix言語視点では低レベル世界の事情であり、Nix言語という高レベルな抽象化された世界は純粋に見えるようにデザインされています。
 
 ## 参照
 
