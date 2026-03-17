@@ -2,7 +2,7 @@
 title: "Vite+ の異常なタスクランナー: vite-task は如何にしてキャッシュの手動依存管理をなくしたか"
 emoji: "🧪"
 type: "tech"
-topics: ["vite", "viteplus", "rust"]
+topics: ["linux", "rust", "vite", "viteplus"]
 published: false
 publication_name: "herp_inc"
 ---
