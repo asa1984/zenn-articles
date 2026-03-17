@@ -3,7 +3,7 @@ title: "Vite+ の異常なタスクランナー: vite-task は如何にしてキ
 emoji: "🧪"
 type: "tech"
 topics: ["linux", "rust", "vite", "viteplus"]
-published: false
+published: true
 publication_name: "herp_inc"
 ---
 
