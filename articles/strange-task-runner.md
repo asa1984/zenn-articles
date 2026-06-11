@@ -224,9 +224,9 @@ vite-task のこの機構は結構すごい仕組みで動いているので、�
 
 徹夜明け朝5時くらいに「vite-task おもろすぎ！」と衝動的に記事を書き始めてしまいましたが、弊社がフルフレックスだったので助かりました。弊社は衝動的技術記事書き人を積極的に募集しております。
 
-https://herp.careers/v1/herpinc/9tYFbxcUPSEP
+https://herp.careers/v1/herpinc/9tYFbxcUPSEP?utm_source=zenn&utm_medium=article&utm_content=0btjuys30w
 
-https://herp.careers/v1/herpinc/-Z20OVrOz6m8
+https://herp.careers/v1/herpinc/-Z20OVrOz6m8?utm_source=zenn&utm_medium=article&utm_content=0btjuys30w
 
 あと私が勝手に Vite+ に置き換えて遊んでいたプロダクトはこちらです。
 

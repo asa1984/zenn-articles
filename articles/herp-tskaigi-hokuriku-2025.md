@@ -106,6 +106,6 @@ _金沢市制百周年記念事業モニュメント。共産主義国家にあ�
 
 ひいては TypeScript やっていき人材や、自分も会社のお金で TSKaigi に参加したいぜ！という人を絶賛募集中です。ぜひ！！！（[インターン](https://herp.careers/v1/herpinc/-Z20OVrOz6m8) もあるよ）
 
-https://herp.careers/v1/herpinc/9tYFbxcUPSEP
+https://herp.careers/v1/herpinc/9tYFbxcUPSEP?utm_source=zenn&utm_medium=article&utm_content=6xr7ti42z4
 
-https://herp.careers/v1/herpinc/G5kBv3sKYPye
+https://herp.careers/v1/herpinc/G5kBv3sKYPye?utm_source=zenn&utm_medium=article&utm_content=6xr7ti42z4
